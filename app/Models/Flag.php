@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Flag extends Model
 {
-    protected $filables=["country_id","file_path","mime_type","file_size"];
+    protected $fillable = [
+        'country_id', 'file_path', 'file_name', 'mime_type', 'file_size'
+    ];
 
-    public function countries(){
+    public function country()
+    {
         return $this->belongsTo(Country::class);
     }
 }

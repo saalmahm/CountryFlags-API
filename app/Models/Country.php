@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Country extends Model
 {
-    protected $filables=["name","capital","population","region","subregion","flag_url","currency","language","motto"];
+    protected $fillable = [
+        'name', 'capital', 'population', 'region', 'subregion', 'flag_url', 'currency', 'language', 'motto'
+    ];
 
-    public function flags(){
+    public function flag()
+    {
         return $this->hasOne(Flag::class);
     }
 }
