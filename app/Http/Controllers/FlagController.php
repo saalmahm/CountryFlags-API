@@ -2,40 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Flag;
+use App\Http\Controllers\Controller;
 use App\Models\Country;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class FlagController extends Controller
 {
-    public function store(Request $request, $id)
+    public function upload(Request $request, $id)
     {
         $country = Country::findOrFail($id);
 
         if ($request->hasFile('flag')) {
-            $file = $request->file('flag');
-            $path = $file->store('flags');
-
-            $flag = Flag::updateOrCreate(
-                ['country_id' => $country->id],
-                [
-                    'file_path' => $path,
-                    'file_name' => $file->getClientOriginalName(),
-                    'mime_type' => $file->getClientMimeType(),
-                    'file_size' => $file->getSize(),
-                ]
-            );
-
-            return response()->json($flag, 201);
+            $path = $request->file('flag')->store('flags', 'public');
+            $country->flag_url = Storage::url($path);
+            $country->save();
         }
 
-        return response()->json(['message' => 'No file uploaded'], 400);
+        return response()->json($country, 200);
     }
 
     public function show($id)
     {
-        $flag = Flag::where('country_id', $id)->firstOrFail();
-        return response()->download(storage_path('app/' . $flag->file_path));
+        $country = Country::findOrFail($id);
+        return response()->file(public_path($country->flag_url));
     }
 }
